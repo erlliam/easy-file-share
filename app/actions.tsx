@@ -22,7 +22,7 @@ export async function saveFile({
       return;
     }
 
-    const filePath = path.join(UPLOADED_DIRECTORY, name);
+    let filePath = path.join(UPLOADED_DIRECTORY, name);
 
     // Ensure there is no directory traversal
     const resolvedFilePath = path.resolve(filePath);
@@ -30,10 +30,18 @@ export async function saveFile({
       return;
     }
 
+    // Handle duplicates
     if (fs.existsSync(filePath)) {
-      // todo: Automatically append to the filename, determine the best number to use
-      // `${fileNameWithoutExtension} (${bestNumber}).${fileExtension}
-      return;
+      let counter = 1;
+      const fileExtension = path.extname(filePath);
+      const fileNameWithoutExtension = path.basename(filePath, fileExtension);
+      while (fs.existsSync(filePath)) {
+        filePath = path.join(
+          UPLOADED_DIRECTORY,
+          `${fileNameWithoutExtension}(${counter})${fileExtension}`,
+        );
+        counter++;
+      }
     }
 
     fs.writeFileSync(filePath, file);
