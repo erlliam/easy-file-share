@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFiles } from "./actions";
+import { getFiles, saveFile } from "./actions";
 
 export default function Home() {
   const [files, setFiles] = useState<string[]>([]);
@@ -16,8 +16,17 @@ export default function Home() {
   return (
     <div>
       <h1>easy-file-share</h1>
+      <UploadFile />
       {filesLoading ? <Loading /> : <UploadedFiles files={files} />}
     </div>
+  );
+}
+
+function Button({ children }: { children: React.ReactNode }) {
+  return (
+    <button className="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+      {children}
+    </button>
   );
 }
 
@@ -58,5 +67,26 @@ function UploadedFiles({ files }: { files: string[] }) {
         </ul>
       )}
     </>
+  );
+}
+
+function UploadFile() {
+  async function uploadFile(formData: FormData) {
+    const fileUpload = formData.get("fileUpload") as File;
+
+    if (!fileUpload.name) {
+      return;
+    }
+
+    const fileBytes = await fileUpload.bytes();
+    // todo: Show the newly uploaded file
+    saveFile({ file: fileBytes, name: fileUpload.name });
+  }
+
+  return (
+    <form action={uploadFile}>
+      <input type="file" name="fileUpload" />
+      <Button>Upload</Button>
+    </form>
   );
 }
