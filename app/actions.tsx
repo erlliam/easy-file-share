@@ -9,31 +9,39 @@ import { UPLOADED_DIRECTORY } from "@/config";
 export async function getFiles(): Promise<FileInfo[]> {
   fs.mkdirSync(UPLOADED_DIRECTORY, { recursive: true });
   const filesInDirectory = fs.readdirSync(UPLOADED_DIRECTORY);
-  const result: FileInfo[] = filesInDirectory.map((x) => ({
-    name: x,
-    url: `/file/${x}`,
-    uploadDate: 0,
-    size: 0,
-  }));
+  const filesInDirectoryWithInformation = filesInDirectory.map((x) =>
+    getFile(x),
+  );
+  await Promise.all(filesInDirectoryWithInformation);
+  return (await Promise.all(filesInDirectoryWithInformation)).sort(
+    (a, b) => b.uploadDate - a.uploadDate,
+  );
+}
 
-  // todo: Make asynchronus? Add a Promise.all thingy use async stat?
-  for (const item of result) {
-    if (!item.name) {
-      continue;
-    }
+export async function getFile(file: string): Promise<FileInfo> {
+  const filePath = path.join(UPLOADED_DIRECTORY, file);
+  const stat = fs.statSync(filePath);
+  const type = await fileTypeFromFile(filePath);
 
-    const filePath = path.join(UPLOADED_DIRECTORY, item.name);
-    const stat = fs.statSync(filePath);
-    const type = await fileTypeFromFile(filePath);
+  // In Linux we do not have access to birthTime
+  const uploadDate = stat.ctimeMs;
+  const size = stat.size;
 
-    // In Linux we do not have access to birthTime
-    item.uploadDate = stat.ctimeMs;
-    item.size = stat.size;
-    item.isVideo = type.mime.startsWith("video/");
-    item.isImage = type.mime.startsWith("image/");
+  let isVideo;
+  let isImage;
+  if (type) {
+    isVideo = type.mime.startsWith("video/");
+    isImage = type.mime.startsWith("image/");
   }
 
-  return result.sort((a, b) => b.uploadDate - a.uploadDate);
+  return {
+    name: file,
+    url: `/file/${file}`,
+    uploadDate,
+    size,
+    isVideo,
+    isImage,
+  };
 }
 
 export async function saveFile({
@@ -71,6 +79,8 @@ export async function saveFile({
     }
 
     fs.writeFileSync(filePath, file);
+
+    return path.basename(filePath);
   } catch (error) {
     console.log(error);
     console.error("saveFile error");
