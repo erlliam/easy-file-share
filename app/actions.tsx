@@ -4,9 +4,7 @@ import path from "path";
 import fs from "fs";
 import { fileTypeFromFile } from "file-type";
 import { FileInfo } from "@/types";
-
-// todo: Change this, don't put uploaded inside app
-const UPLOADED_DIRECTORY = path.resolve("app/uploaded/");
+import { UPLOADED_DIRECTORY } from "@/config";
 
 export async function getFiles(): Promise<FileInfo[]> {
   fs.mkdirSync(UPLOADED_DIRECTORY, { recursive: true });
