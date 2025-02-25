@@ -35,7 +35,7 @@ export async function getFiles(): Promise<FileInfo[]> {
     item.isImage = type.mime.startsWith("image/");
   }
 
-  return result;
+  return result.sort((a, b) => b.uploadDate - a.uploadDate);
 }
 
 export async function saveFile({
