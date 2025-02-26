@@ -1,5 +1,8 @@
 import { FileInfo } from "@/types";
 import Image from "next/image";
+import { createPortal } from "react-dom";
+import Button from "./Button";
+import { useState } from "react";
 
 export default function UploadedFiles({ files }: { files: FileInfo[] }) {
   // ChatGPT
@@ -49,12 +52,68 @@ export default function UploadedFiles({ files }: { files: FileInfo[] }) {
                 <a href={file.url} download>
                   Download
                 </a>
-                <button>Delete</button>
+
+                <Modal
+                  title="Delete file"
+                  button={<button>Delete</button>}
+                  body={(close) => (
+                    <>
+                      <div className="pb-2">
+                        Are you sure you want to permanently delete this file?
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <Button onClick={close}>Cancel</Button>
+                        <Button
+                        // onClick={/* todo: Fire delete request and update list */}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                />
               </div>
             </li>
           ))}
         </ul>
       )}
+    </>
+  );
+}
+
+function Modal({
+  button,
+  body,
+  title,
+}: Readonly<{
+  // readonly does nothing????
+  button: React.ReactNode;
+  body: (close: () => void) => React.ReactNode;
+  title: string;
+}>) {
+  const [open, setOpen] = useState(false);
+
+  function handleOnClick() {
+    setOpen((x) => !x);
+  }
+
+  return (
+    <>
+      <div onClick={handleOnClick}>{button && button}</div>
+
+      {open &&
+        createPortal(
+          <div
+            tabIndex={-1}
+            className="fixed inset-0 flex items-center justify-center overscroll-contain bg-black/80"
+          >
+            <div className="max-w-md rounded border border-gray-600 bg-gray-800 p-4">
+              <header className="pb-2 text-2xl">{title}</header>
+              <div>{body(() => setOpen(false))}</div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
