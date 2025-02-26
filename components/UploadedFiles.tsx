@@ -4,80 +4,95 @@ import { createPortal } from "react-dom";
 import Button from "./Button";
 import { useState } from "react";
 
-export default function UploadedFiles({ files }: { files: FileInfo[] }) {
+function formatBytes(bytes: number, decimals = 2) {
   // ChatGPT
-  function formatBytes(bytes: number, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
 
-    const k = 1024; // Size of 1 KB
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  if (bytes === 0) return "0 Bytes";
 
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const k = 1024; // Size of 1 KB
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
+
+export default function UploadedFiles({
+  files,
+  handleFileDeleted,
+}: {
+  files: FileInfo[];
+  handleFileDeleted: (file: FileInfo) => void;
+}) {
   return (
     <>
       {files.length === 0 ? (
         <p>No uploaded files found. Upload to get started</p>
       ) : (
-        <ul className="flex flex-wrap gap-4">
-          {files.map((file, index) => (
-            <li key={index} className="border border-red-100 p-4">
-              <div>
-                <p>{file.name}</p>
-                <p>{new Date(file.uploadDate).toLocaleString()}</p>
-                <p>{formatBytes(file.size)}</p>
-              </div>
-
-              {file.isImage && (
-                <Image
-                  width={500}
-                  height={500}
-                  src={file.url}
-                  alt={file.name}
-                />
-              )}
-
-              {file.isVideo && (
-                <video controls width={500} height={500}>
-                  <source src={file.url} />
-                </video>
-              )}
-
-              <div className="flex gap-4">
-                <button>Copy</button>
-                <a href={file.url} download>
-                  Download
-                </a>
-
-                <Modal
-                  title="Delete file"
-                  button={<button>Delete</button>}
-                  body={(close) => (
-                    <>
-                      <div className="pb-2">
-                        Are you sure you want to permanently delete this file?
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <Button onClick={close}>Cancel</Button>
-                        <Button
-                        // onClick={/* todo: Fire delete request and update list */}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                />
-              </div>
-            </li>
+        <div className="flex flex-wrap gap-4">
+          {files.map((file) => (
+            <UploadedFile
+              onFileDeleted={() => handleFileDeleted(file)}
+              file={file}
+              key={file.name}
+            />
           ))}
-        </ul>
+        </div>
       )}
     </>
+  );
+}
+
+function UploadedFile({
+  file,
+  onFileDeleted,
+}: {
+  file: FileInfo;
+  onFileDeleted: () => void;
+}) {
+  return (
+    <div className="border border-red-100 p-4">
+      <div>
+        <p>{file.name}</p>
+        <p>{new Date(file.uploadDate).toLocaleString()}</p>
+        <p>{formatBytes(file.size)}</p>
+      </div>
+
+      {file.isImage && (
+        <Image width={500} height={500} src={file.url} alt={file.name} />
+      )}
+
+      {file.isVideo && (
+        <video controls width={500} height={500}>
+          <source src={file.url} />
+        </video>
+      )}
+
+      <div className="flex gap-4">
+        <button>Copy</button>
+        <a href={file.url} download>
+          Download
+        </a>
+
+        {/* todo: ADD LOADING TO THIS DELETE UI,  */}
+        <Modal
+          title="Delete file"
+          button={<button>Delete</button>}
+          body={(close) => (
+            <>
+              <div className="pb-2">
+                Are you sure you want to permanently delete this file?
+              </div>
+              <div className="flex justify-between gap-2">
+                <Button onClick={close}>Cancel</Button>
+                <Button onClick={onFileDeleted}>Delete</Button>
+              </div>
+            </>
+          )}
+        />
+      </div>
+    </div>
   );
 }
 

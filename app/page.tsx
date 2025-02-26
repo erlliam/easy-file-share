@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFiles } from "./actions";
+import { deleteFile, getFiles } from "./actions";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { FileInfo } from "@/types";
 import UploadFile from "@/components/UploadFile";
@@ -15,6 +15,11 @@ export default function Home() {
     setFiles([newFile, ...files]);
   }
 
+  function handleFileDeleted(file: FileInfo) {
+    deleteFile(file.name);
+    setFiles(files.filter((x) => x.name !== file.name));
+  }
+
   useEffect(() => {
     getFiles()
       .then((files) => setFiles(files))
@@ -24,7 +29,11 @@ export default function Home() {
   return (
     <div>
       <UploadFile onFileUpload={handleFileUpload} />
-      {filesLoading ? <LoadingSpinner /> : <UploadedFiles files={files} />}
+      {filesLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <UploadedFiles handleFileDeleted={handleFileDeleted} files={files} />
+      )}
     </div>
   );
 }

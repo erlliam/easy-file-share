@@ -86,3 +86,8 @@ export async function saveFile({
     console.error("saveFile error");
   }
 }
+
+export async function deleteFile(file: string) {
+  const filePath = path.join(UPLOADED_DIRECTORY, file);
+  fs.unlinkSync(filePath);
+}
