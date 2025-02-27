@@ -2,7 +2,7 @@ import { FileInfo } from "@/types";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import Button from "./Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function formatBytes(bytes: number, decimals = 2) {
   // ChatGPT
@@ -117,6 +117,18 @@ function Modal({
   function handleOnClick() {
     setOpen((x) => !x);
   }
+
+  useEffect(() => {
+    if (open) {
+      window.document.documentElement.setAttribute("style", "overflow: hidden");
+    } else {
+      window.document.documentElement.removeAttribute("style");
+    }
+
+    return () => {
+      window.document.documentElement.removeAttribute("style");
+    };
+  }, [open]);
 
   return (
     <>
