@@ -68,7 +68,7 @@ function UploadedFile({
   onFileDeleted: () => void;
 }) {
   return (
-    <div className="overflow-hidden rounded border border-gray-600 bg-gray-800 p-4">
+    <div className="relative overflow-hidden rounded border border-gray-600 bg-gray-800 p-4">
       <div className="pb-4">
         <div className="whitespace-nowrap text-xs">
           <p>{file.name}</p>
@@ -80,15 +80,20 @@ function UploadedFile({
       {file.isImage && (
         <Image
           className="pb-4"
-          width={500}
-          height={500}
+          sizes="100vw"
+          style={{
+            width: "100%",
+            height: "auto",
+          }}
+          width={0}
+          height={0}
           src={file.url}
           alt={file.name}
         />
       )}
 
       {file.isVideo && (
-        <video className="pb-4" controls width={500} height={500}>
+        <video className="pb-4" controls>
           <source src={file.url} />
         </video>
       )}
