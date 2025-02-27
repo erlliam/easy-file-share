@@ -25,18 +25,34 @@ export default function UploadedFiles({
   files: FileInfo[];
   handleFileDeleted: (file: FileInfo) => void;
 }) {
+  // todo: Change columns count based on screen size
+  // Good masonry article at: https://blog.andri.co/021-building-a-stylish-masonry-layout-using-just-css-and-javascript/
+  // We ignore the height based stuff, I think it's probably better to just go by the order the server returns (uploaded date)
+  const columns: FileInfo[][] = [...Array(3)].map(() => []);
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const columnIndex = i % 3;
+
+    columns[columnIndex].push(file);
+  }
+
   return (
     <>
       {files.length === 0 ? (
         <p>No uploaded files found. Upload to get started</p>
       ) : (
-        <div className="m-4 flex flex-wrap gap-4">
-          {files.map((file) => (
-            <UploadedFile
-              onFileDeleted={() => handleFileDeleted(file)}
-              file={file}
-              key={file.name}
-            />
+        <div className="m-4 grid grid-cols-3 gap-4">
+          {columns.map((files, index) => (
+            <div key={index} className="flex flex-col gap-4">
+              {files.map((file) => (
+                <UploadedFile
+                  onFileDeleted={() => handleFileDeleted(file)}
+                  file={file}
+                  key={file.name}
+                />
+              ))}
+            </div>
           ))}
         </div>
       )}
@@ -52,11 +68,13 @@ function UploadedFile({
   onFileDeleted: () => void;
 }) {
   return (
-    <div className="rounded border border-gray-600 bg-gray-800 p-4">
+    <div className="overflow-hidden rounded border border-gray-600 bg-gray-800 p-4">
       <div className="pb-4">
-        <p className="pb-2">{file.name}</p>
-        <p className="pb-2">{new Date(file.uploadDate).toLocaleString()}</p>
-        <p>{formatBytes(file.size)}</p>
+        <div className="whitespace-nowrap text-xs">
+          <p>{file.name}</p>
+          <p>{new Date(file.uploadDate).toLocaleString()}</p>
+          <p>{formatBytes(file.size)}</p>
+        </div>
       </div>
 
       {file.isImage && (
