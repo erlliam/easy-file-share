@@ -30,7 +30,7 @@ export default function UploadedFiles({
       {files.length === 0 ? (
         <p>No uploaded files found. Upload to get started</p>
       ) : (
-        <div className="flex flex-wrap gap-4">
+        <div className="m-4 flex flex-wrap gap-4">
           {files.map((file) => (
             <UploadedFile
               onFileDeleted={() => handleFileDeleted(file)}
@@ -52,19 +52,25 @@ function UploadedFile({
   onFileDeleted: () => void;
 }) {
   return (
-    <div className="border border-red-100 p-4">
-      <div>
-        <p>{file.name}</p>
-        <p>{new Date(file.uploadDate).toLocaleString()}</p>
+    <div className="rounded border border-gray-600 bg-gray-800 p-4">
+      <div className="pb-4">
+        <p className="pb-2">{file.name}</p>
+        <p className="pb-2">{new Date(file.uploadDate).toLocaleString()}</p>
         <p>{formatBytes(file.size)}</p>
       </div>
 
       {file.isImage && (
-        <Image width={500} height={500} src={file.url} alt={file.name} />
+        <Image
+          className="pb-4"
+          width={500}
+          height={500}
+          src={file.url}
+          alt={file.name}
+        />
       )}
 
       {file.isVideo && (
-        <video controls width={500} height={500}>
+        <video className="pb-4" controls width={500} height={500}>
           <source src={file.url} />
         </video>
       )}

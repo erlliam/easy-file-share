@@ -36,7 +36,7 @@ export async function getFile(file: string): Promise<FileInfo> {
 
   return {
     name: file,
-    url: `/file/${file}`,
+    url: `/file/${encodeURIComponent(file)}`,
     uploadDate,
     size,
     isVideo,
