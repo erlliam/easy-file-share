@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { deleteFile, getFiles } from "./actions";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { FileInfo } from "@/types";
-import UploadFile from "@/components/UploadFile";
 import UploadedFiles from "@/components/UploadedFiles";
+import Header from "@/components/Header";
 
 export default function Home() {
   const [files, setFiles] = useState<FileInfo[]>([]);
@@ -28,7 +28,8 @@ export default function Home() {
 
   return (
     <div>
-      <UploadFile onFileUpload={handleFileUpload} />
+      <Header onFileUpload={handleFileUpload} />
+
       {filesLoading ? (
         <LoadingSpinner />
       ) : (
