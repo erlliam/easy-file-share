@@ -2,6 +2,7 @@
 
 import path from "path";
 import fs from "fs";
+import fsPromises from "fs/promises";
 import { fileTypeFromFile } from "file-type";
 import { FileInfo } from "@/types";
 import { UPLOADED_DIRECTORY } from "@/config";
@@ -89,5 +90,9 @@ export async function saveFile({
 
 export async function deleteFile(file: string) {
   const filePath = path.join(UPLOADED_DIRECTORY, file);
-  fs.unlinkSync(filePath);
+  try {
+    await fsPromises.unlink(filePath);
+  } catch {
+    throw Error("Failed to delete file");
+  }
 }

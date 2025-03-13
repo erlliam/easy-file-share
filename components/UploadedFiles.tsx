@@ -3,6 +3,8 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import Button from "./Button";
 import { useEffect, useState } from "react";
+import { deleteFile } from "@/app/actions";
+import LoadingSpinner from "./LoadingSpinner";
 
 function formatBytes(bytes: number, decimals = 2) {
   // ChatGPT
@@ -67,6 +69,8 @@ function UploadedFile({
   file: FileInfo;
   onFileDeleted: () => void;
 }) {
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   return (
     <div className="relative overflow-hidden rounded border border-gray-600 bg-gray-800 p-4">
       <div className="pb-4">
@@ -115,7 +119,25 @@ function UploadedFile({
               </div>
               <div className="flex justify-between gap-2">
                 <Button onClick={close}>Cancel</Button>
-                <Button onClick={onFileDeleted}>Delete</Button>
+                <Button
+                  disabled={deleteLoading}
+                  onClick={async () => {
+                    setDeleteLoading(true);
+
+                    await deleteFile(file.name)
+                      .then(() => {
+                        onFileDeleted();
+                      })
+                      .finally(() => {
+                        setDeleteLoading(false);
+                      });
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    Delete
+                    {deleteLoading && <LoadingSpinner />}
+                  </div>
+                </Button>
               </div>
             </>
           )}
