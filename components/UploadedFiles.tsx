@@ -5,6 +5,7 @@ import Button from "./Button";
 import { useEffect, useState } from "react";
 import { deleteFile } from "@/app/actions";
 import LoadingSpinner from "./LoadingSpinner";
+import toast from "react-hot-toast";
 
 function formatBytes(bytes: number, decimals = 2) {
   // ChatGPT
@@ -124,13 +125,27 @@ function UploadedFile({
                   onClick={async () => {
                     setDeleteLoading(true);
 
-                    await deleteFile(file.name)
-                      .then(() => {
-                        onFileDeleted();
+                    await toast
+                      .promise(deleteFile(file.name), {
+                        loading: "Loading",
+                        success: "File deleted",
+                        error: "Failed to delete file",
                       })
+                      .then(onFileDeleted)
                       .finally(() => {
                         setDeleteLoading(false);
                       });
+                    // await deleteFile(file.name)
+                    //   .then(() => {
+                    //     toast.success("File deleted");
+                    //     onFileDeleted();
+                    //   })
+                    //   .catch(() => {
+                    //     toast.error("Failed to delete file");
+                    //   })
+                    //   .finally(() => {
+                    //     setDeleteLoading(false);
+                    //   });
                   }}
                 >
                   <div className="flex items-center gap-2">
