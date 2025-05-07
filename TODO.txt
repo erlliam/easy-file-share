@@ -1,0 +1,45 @@
+I want to be able to transfer files between my computers. I don't want to sign into anything. I don't want to plug anything in.
+
+I picture a simple web server I can connect on my local network. I should be able to drag and drop files and they should show up right away.
+
+I will have the option to download/copy to clipboard/compress these files.
+
+File compression will come in handy for sharing media via Discord.
+
+There should be an option to add authentication.
+
+I also would like to host a demo for some sort of portfolio site
+
+
+* Home page
+* Settings page
+
+
+todo:
+  [_] Do something about long file names
+  [x] Ensure delete modal has a loading spinner/state
+      [_] Stop loading spinner next to delete button from resizing the cancel button in the modal, minor vertical layout shift that's weird
+      [_] Add disabled CSS to the button
+  [x] Hook up a toast system or download a library for when failing to fetch a file goes wrong, etc
+      [_] Toast on failure to fetch files, failure to upload file, etc
+  [x] Lock down scrolling when a modal is active
+  [x] Hook up the delete file in server actions + update the list after modal confirmation
+  [?] Get inspiration from Streamable
+  [?] Header
+  [_] Improve file upload
+      [_] Should we have a confirmation dialog for file uploads too? Show the preview and file size
+      [_] Drag/drop anywhere
+      [x] Paste into the webpage
+      [x] File selector version
+  [x] Make home page show grid of files
+  [_] Grid item checklist:
+    [x] Show a download button
+    [x] Show a copy to clipboard button
+    [x] Show a delete button
+        [x] Ensure it's behind a modal confirmation
+    [_] Show a compression button
+    [_] Add trim video feature
+    [_] Show text/code snippets preview if possible
+  [?] Settings
+      [_] Set up auth
+      [_] Prevent files or something
