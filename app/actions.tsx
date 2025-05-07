@@ -91,7 +91,6 @@ export async function saveFile({
 export async function deleteFile(file: string) {
   const filePath = path.join(UPLOADED_DIRECTORY, file);
   try {
-    throw Error("Failed to delete file");
     await fsPromises.unlink(filePath);
   } catch {
     throw Error("Failed to delete file");
